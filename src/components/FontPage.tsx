@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import  { useRef, useEffect } from "react";
 import gsap from "gsap";
 
 
@@ -81,7 +81,6 @@ export default function SlideShow() {
 
     if (tlRef.current) tlRef.current.kill();
 
-    const prev = flavors[prevIndex];
     const next = flavors[nextIndex];
     const tl = gsap.timeline({
       defaults: { ease: "power3.inOut" },
