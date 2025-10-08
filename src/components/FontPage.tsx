@@ -1,204 +1,210 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import gsap from "gsap";
-import { Observer } from "gsap/Observer";
 
-gsap.registerPlugin(Observer);
+
+interface Flavor {
+  id: string;
+  bg: string;
+  title: string;
+  subtitle: string;
+  img: string;
+}
 
 export default function SlideShow() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const currentIndex = useRef(0);
-  const animating = useRef(false);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const headlineRef = useRef<HTMLHeadingElement | null>(null);
+  const subtitleRef = useRef<HTMLParagraphElement | null>(null);
+  const imageRef = useRef<HTMLImageElement | null>(null);
+  const buttonsRef = useRef<HTMLButtonElement[]>([]);
+  const stateRef = useRef({ index: 0 });
+  const tlRef = useRef<gsap.core.Timeline | null>(null);
+
+  const flavors: Flavor[] = [
+    {
+      id: "yellow",
+      bg: "#ffd400",
+      title: "CHURRO RASPBERRY",
+      subtitle: "A Magical Duo of Boba and Ice Cream",
+      img: "https://images.unsplash.com/photo-1558603668-6570496b66f8?auto=format&fit=crop&w=800&q=80",
+    },
+    {
+      id: "red",
+      bg: "#bf1f2b",
+      title: "CHURRO RASPBERRY",
+      subtitle: "Sweet, crunchy, and fruity",
+      img: "https://images.unsplash.com/photo-1558603668-6570496b66f8?auto=format&fit=crop&w=800&q=80",
+    },
+    {
+      id: "brown",
+      bg: "#8B5E3C",
+      title: "BOBA ESPRESSO",
+      subtitle: "Deep roasted flavor with popping boba",
+      img: "https://images.unsplash.com/photo-1558603668-6570496b66f8?auto=format&fit=crop&w=800&q=80",
+    },
+    {
+      id: "pink",
+      bg: "#ff7fbf",
+      title: "STRAWBERRY MILK",
+      subtitle: "Creamy strawberry sweetness",
+      img: "https://images.unsplash.com/photo-1579830341096-05f2f31b8259?auto=format&fit=crop&w=800&q=80",
+    },
+  ];
+
 
   useEffect(() => {
-    const sections = gsap.utils.toArray<HTMLElement>(".slide");
-    const images = gsap.utils.toArray<HTMLElement>(".image").reverse();
-    const slideImages = gsap.utils.toArray<HTMLElement>(".slide__img");
-    const outerWrappers = gsap.utils.toArray<HTMLElement>(".slide__outer");
-    const innerWrappers = gsap.utils.toArray<HTMLElement>(".slide__inner");
-    const count = document.querySelector(".count") as HTMLElement;
-    const wrap = gsap.utils.wrap(0, sections.length);
+  if (headlineRef.current) {
+    gsap.fromTo(
+      headlineRef.current,
+      { autoAlpha: 0, y: 60, scaleY: 1.3 },
+      { autoAlpha: 1, y: 0, scaleY: 1.25, duration: 1.2, ease: "power3.out" }
+    );
+  }
+}, []);
 
-    gsap.set(outerWrappers, { xPercent: 100 });
-    gsap.set(innerWrappers, { xPercent: -100 });
-    gsap.set(".slide:nth-of-type(1) .slide__outer", { xPercent: 0 });
-    gsap.set(".slide:nth-of-type(1) .slide__inner", { xPercent: 0 });
 
-    function gotoSection(index: number, direction: number) {
-      animating.current = true;
-      index = wrap(index);
-
-      let tl = gsap.timeline({
-        defaults: { duration: 1, ease: "expo.inOut" },
-        onComplete: () => {
-          animating.current = false;
-        },
-      });
-
-      let currentSection = sections[currentIndex.current];
-      let heading = currentSection.querySelector(".slide__heading");
-      let nextSection = sections[index];
-      let nextHeading = nextSection.querySelector(".slide__heading");
-
-      gsap.set([sections, images], { zIndex: 0, autoAlpha: 0 });
-      gsap.set([sections[currentIndex.current], images[index]], { zIndex: 1, autoAlpha: 1 });
-      gsap.set([sections[index], images[currentIndex.current]], { zIndex: 2, autoAlpha: 1 });
-
-tl.set(count, { text: (index + 1) as any }, 0.32)
-        .fromTo(outerWrappers[index], { xPercent: 100 * direction }, { xPercent: 0 }, 0)
-        .fromTo(innerWrappers[index], { xPercent: -100 * direction }, { xPercent: 0 }, 0)
-        .to(heading, { "--width": 800, xPercent: 30 * direction }, 0)
-        .fromTo(nextHeading, { "--width": 800, xPercent: -30 * direction }, { "--width": 200, xPercent: 0 }, 0)
-        .fromTo(images[index], { xPercent: 125 * direction, scaleX: 1.5, scaleY: 1.3 }, { xPercent: 0, scaleX: 1, scaleY: 1, duration: 1 }, 0)
-        .fromTo(images[currentIndex.current], { xPercent: 0, scaleX: 1, scaleY: 1 }, { xPercent: -125 * direction, scaleX: 1.5, scaleY: 1.3 }, 0)
-        .fromTo(slideImages[index], { scale: 2 }, { scale: 1 }, 0)
-        .timeScale(1);
-
-      currentIndex.current = index;
+  useEffect(() => {
+    const i = stateRef.current.index;
+    if (containerRef.current) {
+      gsap.set(containerRef.current, { backgroundColor: flavors[i].bg });
     }
-
-    Observer.create({
-      type: "wheel,touch,pointer",
-      preventDefault: true,
-      wheelSpeed: -1,
-      onUp: () => {
-        if (animating.current) return;
-        gotoSection(currentIndex.current + 1, +1);
-      },
-      onDown: () => {
-        if (animating.current) return;
-        gotoSection(currentIndex.current - 1, -1);
-      },
-      tolerance: 10,
-    });
-
-    const handleKey = (e: KeyboardEvent) => {
-      if ((e.code === "ArrowUp" || e.code === "ArrowLeft") && !animating.current) {
-        gotoSection(currentIndex.current - 1, -1);
-      }
-      if (
-        (e.code === "ArrowDown" || e.code === "ArrowRight" || e.code === "Space" || e.code === "Enter") &&
-        !animating.current
-      ) {
-        gotoSection(currentIndex.current + 1, 1);
-      }
-    };
-
-    document.addEventListener("keydown", handleKey);
-
-    return () => {
-      document.removeEventListener("keydown", handleKey);
-    };
+    gsap.set(headlineRef.current, { autoAlpha: 1, y: 0, scale: 1 });
+    gsap.set(subtitleRef.current, { autoAlpha: 1, y: 0 });
+    gsap.set(imageRef.current, { autoAlpha: 1, scale: 1, x: 0 });
   }, []);
 
+  const gotoIndex = (nextIndex: number) => {
+    const prevIndex = stateRef.current.index;
+    if (nextIndex === prevIndex) return;
+
+    const wrap = (n: number) => (n + flavors.length) % flavors.length;
+    nextIndex = wrap(nextIndex);
+
+    if (tlRef.current) tlRef.current.kill();
+
+    const prev = flavors[prevIndex];
+    const next = flavors[nextIndex];
+    const tl = gsap.timeline({
+      defaults: { ease: "power3.inOut" },
+onComplete: () => void (stateRef.current.index = nextIndex),
+    });
+
+    const container = containerRef.current;
+    const btn = buttonsRef.current[nextIndex];
+    if (!container || !btn) return;
+
+    // get button position relative to viewport
+    const rect = btn.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+
+    // create ripple circle
+    const circle = document.createElement("div");
+    circle.className = "ripple-circle";
+    circle.style.background = next.bg;
+    container.appendChild(circle);
+
+    // set circle initial position at button
+    gsap.set(circle, {
+      position: "fixed",
+      left: cx,
+      top: cy,
+      xPercent: -50,
+      yPercent: -50,
+      width: 0,
+      height: 0,
+      borderRadius: "50%",
+      zIndex: 2,
+    });
+
+    // animate ripple grow
+    const maxDiameter = Math.max(window.innerWidth, window.innerHeight) * 2;
+    tl.to(circle, {
+      width: maxDiameter,
+      height: maxDiameter,
+      duration: 1.2,
+      ease: "power2.out",
+      onUpdate: () => {
+        const progress = tl.progress();
+        if (progress > 0.4 && container) {
+          gsap.set(container, { backgroundColor: next.bg });
+        }
+      },
+    });
+
+    // fade out circle after bg applied
+    tl.to(circle, { autoAlpha: 0, duration: 0.7 }, "-=0.3");
+    tl.call(() => circle.remove(), [], ">");
+
+    // text and image transitions
+    tl.to(headlineRef.current, { autoAlpha: 0, y: -40, scale: 0.95, duration: 0.4 }, 0);
+    tl.to(subtitleRef.current, { autoAlpha: 0, y: -20, duration: 0.4 }, 0.05);
+    tl.to(imageRef.current, { autoAlpha: 0, scale: 0.95, x: -40, duration: 0.45 }, 0);
+
+    tl.call(() => {
+      if (headlineRef.current) headlineRef.current.textContent = next.title;
+      if (subtitleRef.current) subtitleRef.current.textContent = next.subtitle;
+      if (imageRef.current) imageRef.current.src = next.img;
+
+      buttonsRef.current.forEach((btn, idx) => {
+        if (!btn) return;
+        btn.classList.toggle("active", idx === nextIndex);
+      });
+    }, [], 0.7);
+
+    tl.fromTo(
+      headlineRef.current,
+      { autoAlpha: 0, y: 40, scale: 0.95 },
+      { autoAlpha: 1, y: 0, scale: 1, duration: 0.6 },
+      0.8
+    );
+    tl.fromTo(
+      subtitleRef.current,
+      { autoAlpha: 0, y: 20 },
+      { autoAlpha: 1, y: 0, duration: 0.55 },
+      0.85
+    );
+    tl.fromTo(
+      imageRef.current,
+      { autoAlpha: 0, scale: 1.15, x: 40 },
+      { autoAlpha: 1, scale: 1, x: 0, duration: 0.8, ease: "elastic.out(1, 0.6)" },
+      0.9
+    );
+
+    tlRef.current = tl;
+  };
+
   return (
-    <div ref={containerRef}>
-      <section className="slide">
-        <div className="slide__outer">
-          <div className="slide__inner">
-            <div className="slide__content">
-              <div className="slide__container">
-                <h2 className="slide__heading">RIKO AI</h2>
-                <figure className="slide__img-cont">
-                  <img
-                    className="slide__img"
-                    src="https://images.unsplash.com/photo-1567016376408-0226e4d0c1ea?auto=format&fit=crop&w=800&q=80"
-                    alt=""
-                  />
-                </figure>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="slide">
-        <div className="slide__outer">
-          <div className="slide__inner">
-            <div className="slide__content">
-              <div className="slide__container">
-                <h2 className="slide__heading">IMAGE</h2>
-                <figure className="slide__img-cont">
-                  <img
-                    className="slide__img"
-                    src="https://images.unsplash.com/photo-1558603668-6570496b66f8?auto=format&fit=crop&w=800&q=80"
-                    alt=""
-                  />
-                </figure>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="slide">
-        <div className="slide__outer">
-          <div className="slide__inner">
-            <div className="slide__content">
-              <div className="slide__container">
-                <h2 className="slide__heading">TEXT</h2>
-                <figure className="slide__img-cont">
-                  <img
-                    className="slide__img"
-                    src="https://images.unsplash.com/photo-1537165924986-cc3568f5d454?auto=format&fit=crop&w=800&q=80"
-                    alt=""
-                  />
-                </figure>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="slide">
-        <div className="slide__outer">
-          <div className="slide__inner">
-            <div className="slide__content">
-              <div className="slide__container">
-                <h2 className="slide__heading">VOICE</h2>
-                <figure className="slide__img-cont">
-                  <img
-                    className="slide__img"
-                    src="https://images.unsplash.com/photo-1589271243958-d61e12b61b97?auto=format&fit=crop&w=800&q=80"
-                    alt=""
-                  />
-                </figure>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="overlay">
-        <div className="overlay__content">
-          <p className="overlay__count">
-            0<span className="count">1</span>
+    <div className="slideshow-root">
+      <div className="slideshow-inner" ref={containerRef}>
+        <div className="content-grid">
+          <h1 ref={headlineRef} className="big-heading slide__heading">
+            {flavors[0].title}
+          </h1>
+          {/* <p ref={subtitleRef} className="subtitle">
+            {flavors[0].subtitle}
           </p>
-          <figure className="overlay__img-cont">
-            <img
-              className="image"
-              src="https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=800&q=80"
-              alt=""
-            />
-            <img
-              className="image"
-              src="https://images.unsplash.com/photo-1594666757003-3ee20de41568?auto=format&fit=crop&w=800&q=80"
-              alt=""
-            />
-            <img
-              className="image"
-              src="https://images.unsplash.com/photo-1579830341096-05f2f31b8259?auto=format&fit=crop&w=800&q=80"
-              alt=""
-            />
-            <img
-              className="image"
-              src="https://images.unsplash.com/photo-1603771628302-c32c88e568e3?auto=format&fit=crop&w=800&q=80"
-              alt=""
-            />
-          </figure>
+          <div className="center-image">
+            <figure className="overlay__img-cont">
+              <img ref={imageRef} className="main-image" src={flavors[0].img} alt={flavors[0].title} />
+            </figure>
+          </div> */}
         </div>
-      </section>
 
- 
+        <div className="circle-buttons" role="tablist" aria-label="Flavors">
+          {flavors.map((f, idx) => (
+            <button
+              key={f.id}
+              ref={(el) => {
+                if (el) buttonsRef.current[idx] = el;
+              }}
+              className={`circle-btn ${idx === 0 ? "active" : ""}`}
+              title={f.title}
+              style={{ background: f.bg }}
+              onClick={() => gotoIndex(idx)}
+            />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
