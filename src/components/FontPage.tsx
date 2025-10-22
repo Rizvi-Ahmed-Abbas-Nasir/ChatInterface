@@ -91,18 +91,15 @@ onComplete: () => void (stateRef.current.index = nextIndex),
     const btn = buttonsRef.current[nextIndex];
     if (!container || !btn) return;
 
-    // get button position relative to viewport
     const rect = btn.getBoundingClientRect();
     const cx = rect.left + rect.width / 2;
     const cy = rect.top + rect.height / 2;
 
-    // create ripple circle
     const circle = document.createElement("div");
     circle.className = "ripple-circle";
     circle.style.background = next.bg;
     container.appendChild(circle);
 
-    // set circle initial position at button
     gsap.set(circle, {
       position: "fixed",
       left: cx,
@@ -115,7 +112,6 @@ onComplete: () => void (stateRef.current.index = nextIndex),
       zIndex: 2,
     });
 
-    // animate ripple grow
     const maxDiameter = Math.max(window.innerWidth, window.innerHeight) * 2;
     tl.to(circle, {
       width: maxDiameter,
@@ -130,11 +126,11 @@ onComplete: () => void (stateRef.current.index = nextIndex),
       },
     });
 
-    // fade out circle after bg applied
+    
     tl.to(circle, { autoAlpha: 0, duration: 0.7 }, "-=0.3");
     tl.call(() => circle.remove(), [], ">");
 
-    // text and image transitions
+  
     tl.to(headlineRef.current, { autoAlpha: 0, y: -40, scale: 0.95, duration: 0.4 }, 0);
     tl.to(subtitleRef.current, { autoAlpha: 0, y: -20, duration: 0.4 }, 0.05);
     tl.to(imageRef.current, { autoAlpha: 0, scale: 0.95, x: -40, duration: 0.45 }, 0);
