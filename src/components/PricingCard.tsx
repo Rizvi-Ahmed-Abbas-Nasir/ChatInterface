@@ -167,7 +167,7 @@ const animationTriggered = useRef(false); // track one-time animation
 
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-          {plans.map((plan, i) => (
+          {plans.map((plan) => (
             <div
               key={plan.id}
               ref={addCardRef}
