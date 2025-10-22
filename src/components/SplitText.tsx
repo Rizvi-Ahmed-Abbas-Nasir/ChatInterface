@@ -39,7 +39,6 @@ const BlurText: React.FC<BlurTextProps> = ({
   delay = 200,
   className = "",
   animateBy = "words",
-  direction = "top",
   threshold = 0.1,
   rootMargin = "0px",
   animationFrom,

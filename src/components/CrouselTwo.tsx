@@ -1,4 +1,3 @@
-import React from 'react';
 import CircularGallery from './CarouselComponent';
 
 export default function MarketingCarousel() {

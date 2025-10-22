@@ -5,7 +5,6 @@ import SplitType from "split-type";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 
-import { FaInstagram, FaDiscord, FaLinkedinIn, FaWhatsapp } from "react-icons/fa6";
 
 gsap.registerPlugin(ScrollTrigger);
 

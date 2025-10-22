@@ -16,7 +16,6 @@ interface Plan {
 const RikoPricingPreview: React.FC = () => {
   const sectionRef = useRef<HTMLElement | null>(null);
   const cardsRef = useRef<HTMLDivElement[]>([]);
-  const [visible, setVisible] = useState(false);
   const subtitleRef = useRef<HTMLParagraphElement | null>(null);
  const headline = "Start with the Riko you need.";
   const containerRef = useRef<HTMLHeadingElement>(null);

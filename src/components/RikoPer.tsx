@@ -1,4 +1,3 @@
-import React from "react";
 import SpotlightCard from "./CustomCards";
 import BlurText from "./StoryLine";
 

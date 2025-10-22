@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import type { RefObject } from "react"; 
-import { motion, AnimatePresence } from "motion/react";
 import {
   FaBullseye,
   FaUpload,
@@ -137,7 +136,7 @@ const RikoTimeline: React.FC = () => {
     const boxes = boxRefs.current.filter(Boolean);
     if (boxes.length === 0) return;
 
-    boxes.forEach((box, idx) => {
+    boxes.forEach((box) => {
       // Optional: Reset visibility before animation
       gsap.set(box, { opacity: 0, y: 100 });
 

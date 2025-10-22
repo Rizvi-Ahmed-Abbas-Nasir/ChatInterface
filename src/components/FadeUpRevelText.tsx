@@ -28,55 +28,14 @@ const Title = styled.div`
   }
 `;
 
-const CardsContainer = styled.div`
-  position: relative;
-  width: 100%;
-  margin-top: 50px;
 
-  @media (max-width: 768px) {
-    margin-top: 30px;
-  }
-`;
-
-const CornerCards = styled.div`
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  overflow: visible;
-  transform: translateX(25%) translateY(50%);
-  pointer-events: none;
-
-  @media (max-width: 768px) {
-    position: relative;
-    transform: none;
-    margin-top: 2rem;
-    display: flex;
-    justify-content: center;
-  }
-`;
-
-const CardWrapper = styled.div`
-  width: 100px;
-  height: 200px;
-  position: relative;
-
-  @media (max-width: 768px) {
-    width: 100%;
-    height: auto;
-  }
-`;
 
 const About: React.FC = () => {
   const titleRef = useRef<HTMLHeadingElement | null>(null);
   const cardTextRefs = useRef<(HTMLDivElement | null)[]>([]);
   const sectionRef = useRef<HTMLDivElement | null>(null);
 
-  // Function to add ref to card text refs array
-  const addToCardTextRefs = (el: HTMLDivElement | null) => {
-    if (el && !cardTextRefs.current.includes(el)) {
-      cardTextRefs.current.push(el);
-    }
-  };
+ 
 
   useLayoutEffect(() => {
     if (!titleRef.current || !sectionRef.current) return;
@@ -130,7 +89,7 @@ const About: React.FC = () => {
           });
 
           // Animate card texts with a slight delay after title starts
-          cardSplits.forEach((split, index) => {
+          cardSplits.forEach((split) => {
             timeline.to(
               split.words,
               {
